@@ -4,7 +4,7 @@
 */
 (function($) {
 
-    var eventNameSuffix = '_change';
+    var eventNamePrefix = 'change.';
     var oldattr = $.attr;
 
     // overriden JQuery $.attr() function which raises events when properties are set to plain objects.
@@ -20,7 +20,7 @@
             if (isModel) {
                 oldValue = elem[name];
                 elem[name] = value;
-                $(elem).trigger({ type: name + eventNameSuffix, attribute: name, newValue: value, oldValue: oldValue }); // avoid firing event for DOM elements
+                $(elem).trigger({ type: eventNamePrefix + name, attribute: name, newValue: value, oldValue: oldValue }); // avoid firing event for DOM elements
                 $(elem).trigger({ type: 'change', attribute: name, newValue: value, oldValue: oldValue }); // one event for all changes
             }
             else {
@@ -65,7 +65,7 @@
     // binds the model's modelAttribute+'_changed' event to the given updateView event handler
     bindToView = function(model, modelAttribute, updateView) {
         updateView(); // update it now
-        $(model).bind(modelAttribute + eventNameSuffix, updateView);
+        $(model).bind(eventNamePrefix + modelAttribute, updateView);
         // update it with each change
         return model;
     }

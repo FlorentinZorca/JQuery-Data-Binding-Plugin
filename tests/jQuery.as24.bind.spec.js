@@ -340,19 +340,17 @@ describe("dataBind()",  function() {
 			});
 		});	// when the model changes		
 	}); // for plain text
-	
-	describe("for plain text with translator function", function(){
-		var initialValue = 'some text';
+
+	describe("for pre-filled plain text",  function() {
+		var initialValue = 'the initial value';
 		var domId = 'someLabel';
 		var domSelector = '#'+domId;
-		var dummyTranslator;
 
 		beforeEach(function() {
-			$('body').append('<label id="'+domId+'">Original text.</label>');
+			$('body').append('<label id="'+domId+'">'+initialValue+'</label>');
 			domElement = $(domSelector);
-			$(model).attr(boundField, initialValue);
-			dummyTranslator = jasmine.createSpy('translator').andCallFake(fakeTranslator);		
-			$(model).dataBind({modelAttribute:boundField, selector:domSelector, translateTo: dummyTranslator});
+			$(model).attr(boundField, 'something else');
+			$(model).dataBind({modelAttribute:boundField, selector:domSelector, initialDataInDom: true});
 		});
 
 		afterEach(function() {
@@ -360,12 +358,59 @@ describe("dataBind()",  function() {
 		});
 
 		describe("initial binding", function(){
-			it("should call the given translator function", function(){
+			it("should bring the data from the bound DOM element to the model bound field", function(){
+				expect($(model).attr(boundField)).toEqual(initialValue);
+			});
+		}); // "initial binding"
+
+		describe("when the model changes", function(){
+			var newValue = 'some other text';
+			
+			beforeEach(function(){
+				$(model).attr(boundField, newValue);
+			});
+
+			it("should change the bound DOM element", function(){
+				expect(domElement.text()).toEqual(newValue);
+			});
+		});	// when the model changes		
+	}); // for plain text
+	
+	describe("for plain text with translator function", function(){
+		var initialValue = 'some text';
+		var domId = 'someLabel';
+		var domSelector = '#'+domId;
+		var dummyTranslator;
+		var dummyReversedTranslator;
+
+		beforeEach(function() {
+			$('body').append('<label id="'+domId+'">Original text.</label>');
+			domElement = $(domSelector);
+			$(model).attr(boundField, initialValue);
+			dummyTranslator = jasmine.createSpy('translator').andCallFake(fakeTranslator);
+			dummyReversedTranslator = jasmine.createSpy('translator').andCallFake(reversedFakeTranslator);
+			$(model).dataBind({modelAttribute:boundField, selector:domSelector, translateTo: dummyTranslator, translateFrom: dummyReversedTranslator});
+		});
+
+		afterEach(function() {
+			domElement.remove();
+		});
+
+		describe("initial binding", function(){
+			it("should call the given translator to function", function(){
 				expect(dummyTranslator).toHaveBeenCalled();
 			});
 		
-			it("should call the given translator function with the model value as argument", function(){
+			it("should call the given translator to function with the model value as argument", function(){
 				expect(dummyTranslator).toHaveBeenCalledWith(initialValue);
+			});
+
+			it("should call the given translator from function", function(){
+				expect(dummyReversedTranslator).toHaveBeenCalled();
+			});
+		
+			it("should call the given translator from function with the tranlsated value as argument", function(){
+				expect(dummyReversedTranslator).toHaveBeenCalledWith(fakeTranslator(initialValue));
 			});
 		
 			it("should bring the data to the bound DOM element", function(){

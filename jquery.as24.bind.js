@@ -155,8 +155,21 @@
             valueSelector = listenSelector;
         }
         var updateModel = function() {
-            var domElement = (typeof (valueSelector) === 'function') ? valueSelector() : $(valueSelector);
-            var value = (domProperty === undefined || domProperty === 'val') ? domElement.val() : domElement.attr(domProperty);
+            var domElement = (typeof (valueSelector) === 'function') ? valueSelector() : $(valueSelector),
+			value;
+			
+			switch(domProperty){
+				case undefined:
+				case 'val':
+					value = domElement.val();
+					break;
+				case 'text':
+					value = domElement.text();
+					break;
+				default:
+					value = domElement.attr(domProperty);
+					break;
+			}
             if (translate !== undefined) {
                 value = translate(value);
             }

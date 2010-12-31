@@ -97,7 +97,7 @@
             var value = $(model).attr(modelAttribute);
             if (translate !== undefined) value = translate(value);
             $(selector).attr("checked", false);
-            $(selector).filter("[value=" + value + "]").attr("checked", true);
+            $(selector).filter("[value='" + value + "']").attr("checked", true);
         }
         return bindToView(model, modelAttribute, updateView);
     }
@@ -122,7 +122,7 @@
             $(selector).attr("checked", false);
             $.each(values, function(i, elem) {
                 if (translate !== undefined) elem = translate(elem);
-                $(selector).filter("[value=" + elem + "]").attr("checked", true);
+                $(selector).filter("[value='" + elem + "']").attr("checked", true);
             });
         });
     }

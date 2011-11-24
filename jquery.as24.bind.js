@@ -10,8 +10,8 @@
     // overriden JQuery $.attr() function which raises events when properties are set to plain objects.
     $.attr = function(elem, name, value, pass) {
         var ret = this,
-        //isModel = $.isPlainObject(elem), // available starting with JQuery 1.4
-		isModel = !(elem.nodeType), // DOM elements have nodeType property
+        isModel = $.isPlainObject(elem), // available starting with JQuery 1.4
+		//isModel = !(elem.nodeType), // DOM elements have nodeType property
 		oldValue;
         if (value === undefined) {
             ret = isModel ? elem[name] : oldattr(elem, name, value, pass);
@@ -62,7 +62,7 @@
         return 'property';
     }
 
-    // binds the model's modelAttribute+'_changed' event to the given updateView event handler
+    // binds the model's 'change.'+modelAttribute event to the given updateView event handler
     bindToView = function(model, modelAttribute, updateView) {
         updateView(); // update it now
         $(model).bind(eventNamePrefix + modelAttribute, updateView);

@@ -49,12 +49,19 @@ $(myModel).dataBind({modelAttribute:'name', selector:'#name', eventToBind:'keyup
 From now on, changes to the text box reflect into the model and changes to the model reflect into the text box and the feedback label. So, if we change some value in the text box, the model will magically (actually via events) get the value of the text box and with the same magic the feedback/echo label will get the same value from the model.
 
 We can also programatically set values in the model, by using the attr() method, which is intercepted, so that the model changes will propagate to the bound DOM elements:
+
 ```js
 $(myModel).attr('name', 'A brand New Value');
 ```
 
 Do not set dirrectly the fields of the model because this is not possible to intercept and the change is not propagated to the bound DOM elements.
-You can read the model either with the attr() method like this: var x = $(myModel).attr('name'); or directly like this: var x = myModel.name;
+You can read the model either with the attr() method or directly: 
+
+```js
+var x = $(myModel).attr('name');
+var y = myModel.name;
+var z = myModel['name'];
+```
 
 In the ./examples folder you can find the bindingExample.html file which contains some crammed together usage examples of the data binding.
 

@@ -30,7 +30,7 @@
         return ret;
     }
 
-    getBindingType = function(selector) {
+    var getBindingType = function(selector) {
         var elem;
         var elements = $(selector);
 
@@ -63,14 +63,14 @@
     }
 
     // binds the model's 'change.'+modelAttribute event to the given updateView event handler
-    bindToView = function(model, modelAttribute, updateView) {
+    var bindToView = function(model, modelAttribute, updateView) {
         updateView(); // update it now
         $(model).bind(eventNamePrefix + modelAttribute, updateView);
         // update it with each change
         return model;
     }
 
-    bindToProperty = function(model, modelAttribute, selector, domProperty, translate) {
+    var bindToProperty = function(model, modelAttribute, selector, domProperty, translate) {
         var updateView = function() {
             var value = $(model).attr(modelAttribute);
             if (translate !== undefined) {
@@ -92,7 +92,7 @@
         return bindToView(model, modelAttribute, updateView);
     }
 
-    bindToRadio = function(model, modelAttribute, selector, translate) {
+    var bindToRadio = function(model, modelAttribute, selector, translate) {
         var updateView = function() {
             var value = $(model).attr(modelAttribute);
             if (translate !== undefined) value = translate(value);
@@ -102,7 +102,7 @@
         return bindToView(model, modelAttribute, updateView);
     }
 
-    bindToMoreVals = function(model, modelAttribute, selector, setter) {
+    var bindToMoreVals = function(model, modelAttribute, selector, setter) {
         if (setter === undefined) {
             setter = function(values) {
                 $(selector).val(values);
@@ -117,7 +117,7 @@
         return bindToView(model, modelAttribute, updateView);
     }
 
-    bindToCheckBox = function(model, modelAttribute, selector, translate) {
+    var bindToCheckBox = function(model, modelAttribute, selector, translate) {
         return bindToMoreVals(model, modelAttribute, selector, function(values) {
             $(selector).attr("checked", false);
             $.each(values, function(i, elem) {
@@ -127,7 +127,7 @@
         });
     }
 
-    bindToMultiSelect = function(model, modelAttribute, selector, translate) {
+    var bindToMultiSelect = function(model, modelAttribute, selector, translate) {
         return bindToMoreVals(model, modelAttribute, selector, function(values) {
             var vals = values;
             if (translate !== undefined)
@@ -137,7 +137,7 @@
     }
 
     // binds the 'changed' event of the items found with the given selector to the given updateModel event handler
-    bindFromView = function(model, selector, updateModel, eventToBind) {
+    var bindFromView = function(model, selector, updateModel, eventToBind) {
         var domElement;
         if (typeof (selector) === 'function') {
             domElement = selector(value);
@@ -150,7 +150,7 @@
         return model;
     }
 
-    bindFromProperty = function(model, modelAttribute, listenSelector, valueSelector, domProperty, translate, eventToBind) {
+    var bindFromProperty = function(model, modelAttribute, listenSelector, valueSelector, domProperty, translate, eventToBind) {
         if (valueSelector === undefined) {
             valueSelector = listenSelector;
         }
@@ -178,11 +178,11 @@
         return bindFromView(model, listenSelector, updateModel, eventToBind);
     }
 
-    bindFromRadio = function(model, modelAttribute, selector, translate, eventToBind) {
+    var bindFromRadio = function(model, modelAttribute, selector, translate, eventToBind) {
         return bindFromProperty(model, modelAttribute, selector, function(){return $(selector).filter(":checked");}, 'val', translate, eventToBind);
     }
 
-    bindFromButton = function(model, modelAttribute, selector, translate, eventToBind) {
+    var bindFromButton = function(model, modelAttribute, selector, translate, eventToBind) {
         var domElement = (typeof (selector) === 'function') ? selector() : $(selector);
         if (!eventToBind) { eventToBind = 'click'; }
         domElement.bind(eventToBind, function() {
@@ -192,7 +192,7 @@
         return model;
     }
 
-    bindFromCheckBox = function(model, modelAttribute, selector, translate, eventToBind) {
+    var bindFromCheckBox = function(model, modelAttribute, selector, translate, eventToBind) {
         var updateModel = function() {
             // fill the model field with the all captured data
             var values = [];
@@ -206,7 +206,7 @@
         return bindFromView(model, selector, updateModel, eventToBind);
     }
 
-    bindFromMultiSelect = function(model, modelAttribute, selector, translate, eventToBind) {
+    var bindFromMultiSelect = function(model, modelAttribute, selector, translate, eventToBind) {
         var updateModel = function() {
             // fill the model field with the all captured data
             var values = [];

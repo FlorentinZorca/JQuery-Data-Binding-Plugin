@@ -34,11 +34,10 @@ You need to include jQuery and this plugin before the code using the data bindin
 
 Now, we can do the binding:
 ```js
-$(myModel)
 // bind the model's 'name' attribute to the input textbox identified by it's id (CSS selector '#name') and react on DOM 'keyup' and 'change' events
-.dataBind({modelAttribute:'name', selector:'#name', eventToBind:'keyup change'})
+$(myModel).dataBind({modelAttribute:'name', selector:'#name', eventToBind:'keyup change'});
 // then bind again the model's 'name' attribute to the feedback label named 'nameEcho'
-.dataBind({modelAttribute:'name', selector:'#nameEcho'});
+$(myModel).dataBind({modelAttribute:'name', selector:'#nameEcho'});
 ```
 
 From now on, changes to the text box reflect into the model and changes to the model reflect into the text box and the feedback label. So, if we change some value in the text box, the model will magically (actually via events) get the value of the text box and with the same magic the feedback/echo label will get the same value from the model.

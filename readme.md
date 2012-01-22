@@ -80,8 +80,10 @@ $(validationModel)
 	.dataBind({modelAttribute:'name', selector:'#nameValidation'});
 
 $(myModel).on('change.name', function(event){
-	if(event.newValue) $(validationModel).attr('name', '');
-	else $(validationModel).attr('name', 'Please enter a value!');
+	if(event.newValue!==event.oldValue){
+		if(event.newValue) $(validationModel).attr('name', '');
+		else $(validationModel).attr('name', 'Please enter a value!');
+	}
 });
 ```
 

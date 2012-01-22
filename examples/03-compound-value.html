@@ -1,0 +1,51 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>Data Binding in JavaScript - 03. Trivial Compund Value with Validation</title>
+	<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script> 
+	<!-- the binding plugin can also be included much later, just before it's usage at the end of the page.-->
+    <script src="../jQuery.as24.bind.js" type="text/javascript"></script>
+</head>
+<body>
+	Simple Validation: Neither first name nor the last name may be empty.
+	<br/>
+    First Name: <input id="firstName" value="If you see me it doesn't work."/>&nbsp;<label id="firstNameValidation"></label><br/>
+    Last Name: <input id="lastName" value="If you see me it doesn't work."/>&nbsp;<label id="lastNameValidation"></label><br/>
+	The full name:&nbsp;<label id="nameEcho">If you see me it doesn't work.</label>
+
+    <script type="text/javascript">
+	// My model is a really simple JS object 
+		var myModel = {firstName:'John', lastName:'Doe', fullName:'John Doe'}; 
+		var validationModel = {firstName:'', lastName:''}; 
+		
+	// The Bindings	
+		$(myModel)
+			// bind the model's 'firstName' attribute to the input textbox identified by it's id (CSS selector '#firstName') and react on DOM 'keyup' and 'change' events
+			.dataBind({modelAttribute:'firstName', selector:'#firstName', eventToBind:'keyup change'})
+			// bind the model's 'lastName' attribute to the input textbox identified by it's id (CSS selector '#lastName') and react on DOM 'keyup' and 'change' events
+			.dataBind({modelAttribute:'lastName', selector:'#lastName', eventToBind:'keyup change'})
+			// then bind again the model's 'name' attribute to the feedback label named 'nameEcho'
+			.dataBind({modelAttribute:'fullName', selector:'#nameEcho'});
+	
+		$(validationModel)
+			.dataBind({modelAttribute:'firstName', selector:'#firstNameValidation'})
+			.dataBind({modelAttribute:'lastName', selector:'#lastNameValidation'});
+	
+	// React to model changes in order to validate it and to build compund value(same validation for first and last names)
+	
+		$(myModel).on('change.firstName change.lastName', function(event){
+			if(event.newValue!==event.oldValue){
+				if(event.newValue){
+					$(validationModel).attr(event.attribute, '');
+				}
+				else{
+					$(validationModel).attr(event.attribute, 'Please enter a value!');
+				}
+				
+				$(myModel).attr('fullName', myModel.firstName+' '+myModel.lastName);
+			}
+		});
+	
+    </script>	
+</body>
+</html>

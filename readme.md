@@ -65,6 +65,17 @@ var z = myModel['name'];
 
 In the ./examples folder you can find the bindingExample.html file which contains some crammed together usage examples of the data binding.
 
+## Validation
+
+It is very easy to implement a clean validation with this plugin. We should validate the model, not the DOM element values. In order to implement trivial input validation you should have a second model, with the same fields as the main model. You bind the main model to the input elements and the validation model to the validation feedback (usually styled labels). You also need to react on changes to the main model in order to check it. Because this plugin uses events you can bind to 'change' event on the model or even fine grained, per field events like 'change.name': 
+
+```js
+$(myModel).on('change.name', function(event){
+	if(event.newValue) $(validationModel).attr('name', '');
+	else $(validationModel).attr('name', 'Please enter a value!');
+});
+```
+
 ## Tests
 The ./tests folder contains the automatic tests/specs for the jquery.as24.bind.js and the needed testing framework jasmine (https://github.com/pivotal/jasmine).
 

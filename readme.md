@@ -20,6 +20,7 @@ Echo:&nbsp;<label id="nameEcho">Here will be the echo...</label>
 ```
 
 We can have an existing model in a the simple form of a JavaScript object with one property, called 'name'
+
 ```js
 var myModel = {name:'Some value'};
 ```
@@ -28,11 +29,13 @@ Until now we do not have anything to do with the data binding plugin.
 You need to include jQuery and this plugin before the code using the data binding:
 
 ```html
-<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script> 
+<script type="text/javascript"
+ src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script> 
 <script src="./jquery.as24.bind-1.3.2.min.js" type="text/javascript"></script>
 ```
 
 Now, we can do the binding:
+
 ```js
 // bind the model's 'name' attribute to the input textbox identified by it's id (CSS selector '#name') and react on DOM 'keyup' and 'change' events
 $(myModel).dataBind({modelAttribute:'name', selector:'#name', eventToBind:'keyup change'});

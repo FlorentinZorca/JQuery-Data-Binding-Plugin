@@ -87,6 +87,36 @@ $(myModel).on('change.name', function(event){
 });
 ```
 
+## Compound Values
+Because this plugin works with events, you can easily build compound values:
+
+```js
+var myModel = {firstName:'', lastName:''}; 
+var anotherModel = {fullName:''}; 
+
+$(myModel).on('change.firstName change.lastName', function(event){
+	if(event.newValue!==event.oldValue){
+		$(anotherModel).attr('fullName', myModel.firstName+' '+myModel.lastName);
+	}
+});
+```
+
+## Data Transformation
+You can transform the data when propagated from the model to bound DOM elements, from DOM elements to the model and even in both directions:
+
+```js
+var myModel = {name:''};
+
+// bind the model's 'name' attribute to the feedback 
+// label named 'nameEcho'. This label will display transformed (UPPERCASED) data.
+$(myModel)
+	.dataBind({modelAttribute:'name', selector:'#nameEcho', translateTo:function(newValue){
+		return newValue.toUpperCase()}});
+	
+$(myModel).attr('name', 'some value');
+```
+
+
 ## Tests
 The ./tests folder contains the automatic tests/specs for the jquery.as24.bind.js and the needed testing framework jasmine (https://github.com/pivotal/jasmine).
 

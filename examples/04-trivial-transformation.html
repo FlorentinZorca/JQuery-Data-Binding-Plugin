@@ -1,0 +1,30 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>Data Binding in JavaScript - 04. Simplest Binding with a Trivial Transformation</title>
+	<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script> 
+	<!-- the binding plugin can also be included much later, just before it's usage at the end of the page.-->
+    <script src="../jQuery.as24.bind.js" type="text/javascript"></script>
+</head>
+<body>
+	<br/>
+    Name: <input id="name" value="If you see me it doesn't work."/><br/>
+	Echo:&nbsp;<label id="nameEcho">If you see me it doesn't work.</label>
+
+    <script type="text/javascript">
+	// my model is a really simple JS object 
+		var myModel = {name:''};
+		
+	// The Bindings	
+		$(myModel)
+			// bind the model's 'name' attribute to the input textbox identified by it's id (CSS selector '#name') and react on DOM 'keyup' and 'change' events
+			.dataBind({modelAttribute:'name', selector:'#name', eventToBind:'keyup change'})
+			// then bind again the model's 'name' attribute to the feedback label named 'nameEcho'
+			.dataBind({modelAttribute:'name', selector:'#nameEcho', translateTo:function(newValue){return newValue.toUpperCase()}});
+		
+		// Set a value to the model => the label will display the transformed value
+		$(myModel).attr('name', 'John Doe');
+		
+    </script>	
+</body>
+</html>

@@ -10,8 +10,7 @@
     // overriden JQuery $.attr() function which raises events when properties are set to plain objects.
     $.attr = function(elem, name, value, pass) {
         var ret = this,
-        isModel = $.isPlainObject(elem), // available starting with JQuery 1.4
-		//isModel = !(elem.nodeType), // DOM elements have nodeType property
+        isModel = $.isPlainObject(elem), 
 		oldValue;
         if (value === undefined) {
             ret = isModel ? elem[name] : oldattr(elem, name, value, pass);
@@ -20,11 +19,11 @@
             if (isModel) {
                 oldValue = elem[name];
                 elem[name] = value;
-                $(elem).trigger({ type: eventNamePrefix + name, attribute: name, newValue: value, oldValue: oldValue }); // avoid firing event for DOM elements
-                $(elem).trigger({ type: 'change', attribute: name, newValue: value, oldValue: oldValue }); // one event for all changes
+                $(elem).trigger({ type: eventNamePrefix + name, attribute: name, newValue: value, oldValue: oldValue }); // the event for the current attribute change
+                $(elem).trigger({ type: 'change', attribute: name, newValue: value, oldValue: oldValue }); // one event for all changes of the whole object
             }
             else {
-                oldattr(elem, name, value, pass);
+                oldattr(elem, name, value, pass); // for the rest, just call the overriden attr function
             }
         }
         return ret;
@@ -40,16 +39,16 @@
             switch (elem.nodeName) {
                 case 'INPUT':
                     switch (elem.type) {
-                        case 'hidden':
-                        case 'password':
-                            return 'text';
+                        case 'button':
+						case 'radio':
+						case 'checkbox':
+                            return elem.type;
                         case 'reset':
                         case 'submit':
                             return 'button'
-                        default:
-                            return elem.type;
+						default:
+							return 'text';
                     }
-                    break;
                 case 'SELECT':
                     if (elem.multiple) return 'multiselect';
                     else return 'dropdown';
@@ -58,8 +57,9 @@
                 case 'TEXTAREA':
                     return 'text';
             }
+			return 'property';
         }
-        return 'property';
+        return null;
     }
 
     // binds the model's 'change.'+modelAttribute event to the given updateView event handler
@@ -136,7 +136,7 @@
         });
     }
 
-    // binds the 'changed' event of the items found with the given selector to the given updateModel event handler
+    // binds the 'change' event of the items found with the given selector to the given updateModel event handler
     var bindFromView = function(model, selector, updateModel, eventToBind) {
         var domElement;
         if (typeof (selector) === 'function') {
@@ -224,6 +224,8 @@
 
     var dataBind = function(model, modelAttribute, selector, translateTo, translateFrom, domProperty, initialDataInDom, eventToBind) {
         switch (getBindingType(selector)) {
+			case null:
+				break; // nothing to do
             case 'radio':
                 if (initialDataInDom) {
                     bindFromRadio(model, modelAttribute, selector, translateFrom, eventToBind);
@@ -276,6 +278,20 @@
         return model;
     }
 
+	var autoBind = function(model, initialDataInDom, eventToBind){
+		$.each(model[0], function(name){
+			if(!name.match('^jQuery')){
+				// bind to these elements
+				dataBind(model, name, '#'+name, undefined, undefined, undefined, initialDataInDom, eventToBind);
+				dataBind(model, name, '[name='+name+']', undefined, undefined, undefined, initialDataInDom, eventToBind);
+				dataBind(model, name, 'label[for='+name+']', undefined, undefined, undefined, initialDataInDom, eventToBind);
+			}			
+		})
+		
+		return model;
+	}
+	
+	
     $.fn.extend({
         // Returns the appropriate binding type for the first DOM element matched by the given selector.
         getBindingType: getBindingType,
@@ -296,8 +312,14 @@
         // an event which triggers a silent (eventless) update of the bound DOM elements.
         // If the domProperty is ommitted, then the appropriate property is chosen according to the matched DOM elemens (val() or text()).
         // Usually you need to call this function with only the first two parameters filled.
-        dataBind: function(config) {
+        dataBind: function(config){
             return dataBind(this, config.modelAttribute, config.selector, config.translateTo, config.translateFrom, config.domProperty, config.initialDataInDom, config.eventToBind);
-        }
+		},
+		// Does convention based data binding. It searches in DOM for ids and names matching the model fields
+		autoBind: function(config){
+			if(config==null || config==undefined)
+				return autoBind(this);
+			return autoBind(this, config.initialDataInDom, config.eventToBind);
+		}
     });
 })(jQuery);

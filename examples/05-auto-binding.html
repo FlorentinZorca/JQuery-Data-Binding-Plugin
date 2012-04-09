@@ -1,0 +1,160 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>Data Binding in JavaScript - 05. Auto Binding</title>
+	<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script> 
+	<script type="text/javascript"> 
+	if (! window.jQuery) {
+	document.write(unescape("%3Cscript src='../dependencies/jquery-1.7.1.min.js' type='text/javascript'%3E%3C/script%3E")); 
+	} 
+	</script>
+</head>
+<body>
+    <script src="../jQuery.as24.bind.js" type="text/javascript"></script>
+This page contains examples for the automatic data binding in JavaScript.<br/>
+    Name: <input id="name" value="If you see me it doesn't work."/>
+	<br/>
+    Phone: <input id="phone" value="If you see me it doesn't work."/>&nbsp;	Opinion: <label for="op_Y">Yes</label><input type="radio" id="op_Y" name="opinion" value="Y"/>&nbsp;<label for="op_N">No</label><input type="radio" id="op_N" name="opinion" value="N"/>&nbsp;<label for="op_O">Don't know</label><input type="radio" id="op_O" name="opinion" value="O" checked="checked"/>
+	<br/>
+	Comments: <textarea id="comments">If you see me it doesn't work.</textarea>
+	<br/>
+	Car make: <select id="make">
+		<option value="">All</option>
+		<option value="9">Audi</option>
+		<option value="13">BMW</option>
+		<option value="47">Mercedes-Benz</option>
+		<option value="6">Alfa Romeo</option>
+		<option value="56" selected="selected">Opel</option>
+		<option value="52">Nissan</option>
+		<option value="74">VW</option>
+		<option value="60">Renault</option>
+		<option value="21">Citroen</option>
+	</select>
+	<br/>
+	Foods: <select id="food" multiple="multiple" size="4">
+		<option value="C" selected>Mushroom</option>
+		<option value="V" selected>Vegetable</option>
+		<option value="M">Meat</option>
+		<option value="F">Fish</option>
+	</select>
+	<br/>
+	Languages: <label for="lng_CS">C#</label><input type="checkbox" id="lng_CS" name="languages" value="CS"/>&nbsp;<label for="lng_C">C</label><input type="checkbox" id="lng_C" name="languages" value="C"/>&nbsp;<label for="lng_J">Java</label><input type="checkbox" id="lng_J" name="languages" value="J" checked="checked"/>&nbsp;<label for="lng_JS">JavaScript</label><input type="checkbox" id="lng_JS" name="languages" value="JS" checked="checked"/>&nbsp;<label for="lng_CH">Chapel</label><input type="checkbox" id="lng_CH" name="languages" value="CH"/>&nbsp;<label for="lng_PY">Python</label><input type="checkbox" id="lng_PY" name="languages" value="PY" checked="checked"/>&nbsp;<label for="lng_GO">Go</label><input type="checkbox" id="lng_GO" name="languages" value="GO" checked="checked"/>
+	<br/>
+	Equipment: <label for="lkjd">Air conditioning</label><input type="checkbox" id="lkjd" alt="5" class="equi" name="oiusd"/>&nbsp;<label for="oiudmx">Automatic Air Conditioning</label><input type="checkbox" id="oiudmx" class="equi" alt="30" name="jdhdtg"/>&nbsp;<label for="srfdwgc">ESP</label><input type="checkbox" id="srfdwgc" class="equi" name="usksme" alt="1" checked="checked"/>
+	<br/>
+	kW: <input type="text" id="kW" />
+	<br/>
+	<div id="someInfoDiv" class="Y">This is some text, unrelated to the data, which is not visible if the opinion is No. The effect demonstrates the usage of binding to a chosen property.</div>
+	<br/>	
+    <input type="button" id="boundButton" value="Some value" \>
+
+<style>
+.Y {width: 120px; padding: 1em; background-color:#ffaa00}
+.N {display:none}
+.O {width: 120px; padding: 1em; background-color:#999999}
+</style>	
+	<div id="feedbackDiv" style="position: absolute; left: 580px; top: 20px; height: 400px; width: 120px; padding: 1em; background-color:#eeeeee">Currently you chose:<br/>
+	<label id="nameEcho" for="name">If you see me it doesn't work.</label><br/>
+	<label id="phoneEcho" for="phone">If you see me it doesn't work.</label><br/>
+	<label id="opinionName" for="opinion">If you see me it doesn't work.</label><br/>
+	<label id="commentsEcho" for="comments">If you see me it doesn't work.</label><br/>
+	<label id="makeName" for="make">If you see me it doesn't work.</label><br/>
+	<label id="foodNames" for="food">If you see me it doesn't work.</label><br/>
+	<label id="languageNames" for="languages">If you see me it doesn't work.</label><br/>
+	<label id="equipmentNames" for="equipment">If you see me it doesn't work.</label><br/>
+	<label id="kwEcho" for="kw">If you see me it doesn't work.</label><br/>
+	<label id="boundButtonEcho" for="">If you see me it doesn't work.</label><br/>
+	</div>
+    <script type="text/javascript">
+	
+		var contact = {name:'one', phone:'two', opinion:'', comments:'', make:'', languages:'', food:'', equipment:'', kw:''};
+		var contactErrors = {nameError:"OK", phoneError:"OK"};
+
+		$(contact).autoBind();
+/*
+	// BEGIN Sample Bindings
+		// put a value to equipment checkboxes, which do not have one and do not have usable names or ids either (like the ASP.net checkboxes)
+		$.each($('input[class=equi]'), function(i, n){
+			n['value'] = n['alt'];
+		})
+	
+		$(contact)
+		// BEGIN bidirectional binding with form elements
+			.dataBind({modelAttribute:'opinion', selector:'input[name=opinion]'})
+			.dataBind({modelAttribute:'name', selector:'#name', eventToBind:'keyup change'})
+			.dataBind({modelAttribute:'phone', selector:'#phone', eventToBind:'keyup change'})
+			.dataBind({modelAttribute:'comments', selector:'#comments'})
+			.dataBind({modelAttribute:'make', selector:'#make'})
+			.dataBind({modelAttribute:'languages', selector:'input[name=languages]'})
+			.dataBind({modelAttribute:'food', selector:'#food'})
+			.dataBind({modelAttribute:'equipment', selector:'input[class=equi]'})// now that it has a value
+			.dataBind({modelAttribute:'kw', selector:'#kW'})
+			.dataBind({modelAttribute:'awaken', selector:'#boundButton'})
+		// END bidirectional binding with form elements
+		// BEGIN unidirectional binding for human readable feedback	
+			.dataBind({modelAttribute:'name', selector:'#nameEcho'})
+			.dataBind({modelAttribute:'phone', selector:'#phoneEcho'})
+			.dataBind({modelAttribute:'make', selector:'#makeName', translateTo:function(id){
+				return $('#make option[value='+id+']').text();
+			}})
+			.dataBind({modelAttribute:'food', selector:'#foodNames', translateTo:function(ids){
+				var values = [];
+				$.each(ids.split(','), function(i, id){
+					values[i] = $('#food option[value='+id+']').text();
+				});
+				return values.join(', ');
+			}})
+			.dataBind({modelAttribute:'opinion', selector:'#opinionName', translateTo:function(id){
+				return $('label[for=op_'+id+']').text();
+			}})
+			.dataBind({modelAttribute:'languages', selector:'#languageNames', translateTo:function(ids){
+				var values = [];
+				$.each(ids.split(','), function(i, id){
+					values[i] = $('label[for=lng_'+id+']').text();
+				});
+				return values.join(', ');
+			}})
+			.dataBind({modelAttribute:'comments', selector:'#commentsEcho'})
+			.dataBind({modelAttribute:'equipment', selector:'#equipmentNames', translateTo:function(ids){
+				var values = [];
+				$.each(ids.split(','), function(i, id){
+					var checkboxElem = $('input[class=equi][value='+id+']');
+					values[i] = $('label[for='+checkboxElem.attr('id')+']').text();
+				});
+				return values.join(', ');
+			}})
+			.dataBind({modelAttribute:'kw', selector:'#kwEcho'})
+			.dataBind({modelAttribute:'awaken', selector:'#boundButtonEcho'})
+		// END unidirectional binding for human readable feedback
+		// BEGIN unidirectional binding for a chosen property (other than the normal val() or text())
+			.dataBind({modelAttribute:'opinion', selector:'#someInfoDiv', domProperty:'class'})
+		// END unidirectional binding for a chosen property	(other than the normal val() or text())
+		;
+	// END Sample Bindings
+/*		
+*/	
+        // Modify contact by setting attributes via attr(), which is intercepted in order to propagate changes. 
+        $(contact).attr({
+            name: "Max Mustermann",
+            phone: "089 123 456 789",
+			opinion: "Y",
+			comments: "I'm good at Software.",
+			make:"47",
+			languages:"CS,C,JS,J,CH",
+			food:"C,V,M,F",
+			equipment:"5,30",
+			awaken:''
+        });
+		
+		// DON'T SET THE MODEL LIKE THIS:
+        // DO NOT: contact.name = "Some Name"; 
+        // because it ignores the data linking.
+		// DO THIS INSTEAD: contact.attr('name', 'Some Name');
+    </script>
+	
+    <script type="text/javascript">
+		$(contactErrors).attr({nameError: "", phoneError: ""});
+	</script>
+	
+</body>
+</html>

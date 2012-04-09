@@ -262,7 +262,39 @@ describe("getBindingType()", function(){
 			expect($().getBindingType(domSelector)).toEqual('property');
 		});
 	});
-	
+
+	describe("number box", function(){
+		beforeEach(function() {
+			domId = 'someTextBox';
+			domSelector = '#'+domId;
+			$('body').append('<input type="number" id="'+domId+'" value="1" min="0" max="100"/>');
+			domElements = $(domSelector);
+		});
+
+		afterEach(function() {
+			domElements.remove();
+		});
+		
+		it("should return 'text'", function(){
+			expect($().getBindingType(domSelector)).toEqual('text');
+		});
+	});
+
+	describe("for inexistent DOM element",  function() {
+		var initialValue = 'some text';
+		var domId = 'somethingWhichSurelyIsNotInDOM';
+		var domSelector = '#'+domId;
+
+		beforeEach(function() {
+			domElement = $(domSelector);
+			if(domElement) domElement.remove();
+		});
+		
+		it("should return null", function(){
+			expect($().getBindingType(domSelector)).toBeNull();
+		});
+	});
+
 });
 
 describe("dataBind()",  function() {
@@ -1617,6 +1649,257 @@ describe("dataBind()",  function() {
 			});
 		});	// when the model changes
 	}); // for other properties of DOM elements with translator functions
+	
+	describe("for number boxes",  function() {
+		var initialValue = '2';
+		var domId = 'someNumberBox';
+		var domSelector = '#'+domId;
+
+		beforeEach(function() {
+			$('body').append('<input type="number" id="'+domId+'" value="1" min="0" max="100"/>');
+			domElement = $(domSelector);
+			$(model).attr(boundField, initialValue);
+			$(model).dataBind({modelAttribute:boundField, selector:domSelector});
+		});
+
+		afterEach(function() {
+			domElement.remove();
+		});
+
+		describe("initial binding", function(){
+			it("should bring the data to the bound DOM element", function(){
+				expect(domElement.val()).toEqual(initialValue);
+			});
+		}); // "initial binding"
+		
+		describe("when the model changes", function(){
+			var newValue = '3';
+
+			beforeEach(function(){
+				$(model).attr(boundField, newValue);
+			});
+			
+			it("should change the bound DOM element", function(){
+				expect(domElement.val()).toEqual(newValue);
+			});		
+		});	// when the model changes
+
+		describe("when DOM value changes", function() {	
+			var newValue = "4";
+		
+			beforeEach(function(){
+				domElement.val(newValue);
+				domElement.change(); // simulate the manual change
+			});
+		
+			it("should fill the model with the new value from the bound DOM element", function(){
+				expect($(model).attr(boundField)).toEqual(newValue);
+			});
+		}); // when DOM value changes						
+	}); // for number boxes
+		
+	describe("for number boxes reacting on key press",  function() {
+		var initialValue = '2';
+		var domId = 'someNumberBox';
+		var domSelector = '#'+domId;
+
+		beforeEach(function() {
+			$('body').append('<input type="number" id="'+domId+'" value="1" min="0" max="100"/>');
+			domElement = $(domSelector);
+			$(model).attr(boundField, initialValue);
+			$(model).dataBind({modelAttribute:boundField, selector:domSelector, eventToBind:'keypress'});
+		});
+
+		afterEach(function() {
+			domElement.remove();
+		});
+
+		describe("initial binding", function(){
+			it("should bring the data to the bound DOM element", function(){
+				expect(domElement.val()).toEqual(initialValue);
+			});
+		}); // "initial binding"
+		
+		describe("when the model changes", function(){
+			var newValue = '3';
+
+			beforeEach(function(){
+				$(model).attr(boundField, newValue);
+			});
+			
+			it("should change the bound DOM element", function(){
+				expect(domElement.val()).toEqual(newValue);
+			});		
+		});	// when the model changes
+
+		describe("when DOM value changes", function() {	
+			var newValue = "4";
+		
+			beforeEach(function(){
+				domElement.val(newValue);
+				domElement.keypress(); // simulate the manual change
+			});
+		
+			it("should fill the model with the new value from the bound DOM element", function(){
+				expect($(model).attr(boundField)).toEqual(newValue);
+			});
+		}); // when DOM value changes						
+	}); // for number boxes reacting on key press
+		
+	describe("for pre-filled number boxes",  function() {
+		var initialValue = '2';
+		var domId = 'someNumberBox';
+		var domSelector = '#'+domId;
+
+		beforeEach(function() {
+			$('body').append('<input type="number" id="'+domId+'" value="'+initialValue+'" min="0" max="100"/>');
+			domElement = $(domSelector);
+			$(model).dataBind({modelAttribute:boundField, selector:domSelector, initialDataInDom:true});
+		});
+
+		afterEach(function() {
+			domElement.remove();
+		});
+
+		describe("initial binding", function(){
+			it("should bring the data to the model", function(){
+				expect($(model).attr(boundField)).toEqual(initialValue);
+			});
+		}); // "initial binding"
+
+		describe("when DOM value changes", function() {	
+			var newValue = "3";
+		
+			beforeEach(function(){
+				domElement.val(newValue);
+				domElement.change(); // simulate the manual change
+			});
+		
+			it("should fill the model with the new value from the bound DOM element", function(){
+				expect($(model).attr(boundField)).toEqual(newValue);
+			});
+		}); // when DOM value changes						
+		
+		describe("when the model changes", function(){
+			var newValue = '4';
+
+			beforeEach(function(){
+				$(model).attr(boundField, newValue);
+			});
+			
+			it("should change the bound DOM element", function(){
+				expect(domElement.val()).toEqual(newValue);
+			});		
+		});	// when the model changes
+	}); // for pre-filled number boxes
+	
+	describe("for number boxes with translator functions",  function() {
+		var initialValue = 'one';
+		var domId = 'someNumberBox';
+		var domSelector = '#'+domId;
+		var dummyTranslatorModelToDom;
+		var dummyTranslatorDomToModel;
+
+		beforeEach(function() {
+			$('body').append('<input type="number" id="'+domId+'" value="1" min="0" max="100"/>');
+			domElement = $(domSelector);
+			$(model).attr(boundField, initialValue);
+			dummyTranslatorModelToDom = jasmine.createSpy('model2dom').andCallFake(wordToNumberTranslator);
+			dummyTranslatorDomToModel = jasmine.createSpy('dom2model').andCallFake(numberToWordTranslator);
+			// WARNING: the 2 translator functions must be opposite f(g(x))=x=g(f(x)) 
+			$(model).dataBind({modelAttribute:boundField, selector:domSelector, translateTo: dummyTranslatorModelToDom, translateFrom: dummyTranslatorDomToModel});
+		});
+
+		afterEach(function() {
+			domElement.remove();
+		});
+
+		describe("initial binding", function(){
+			it("should call the given translator function", function(){
+				expect(dummyTranslatorModelToDom).toHaveBeenCalled();
+			});
+		
+			it("should call the given translator function with the model value as argument", function(){
+				expect(dummyTranslatorModelToDom).toHaveBeenCalledWith(initialValue);
+			});
+		
+			it("should bring the data to the bound DOM element", function(){
+				expect(domElement.val()).toEqual(wordToNumberTranslator(initialValue));
+			});
+		}); // "initial binding"
+
+		describe("when the model changes", function(){
+			var newValue = 'two';
+			
+			beforeEach(function(){
+				$(model).attr(boundField, newValue);
+			});
+		
+			it("should call the given translator function", function(){
+				expect(dummyTranslatorModelToDom).toHaveBeenCalled();
+			});
+		
+			it("should call the given translator function with the new model value as argument", function(){
+				expect(dummyTranslatorModelToDom).toHaveBeenCalledWith(newValue);
+			});
+
+			it("should change the bound DOM element", function(){
+				expect(domElement.val()).toEqual(wordToNumberTranslator(newValue));
+			});
+		});	// when the model changes
+
+		describe("when the DOM element changes", function(){
+			var newValue = "3";
+		
+			beforeEach(function(){
+				domElement.val(newValue);
+				domElement.change(); // simulate the manual change
+			});
+		
+			it("should call the given translator function", function(){
+				expect(dummyTranslatorDomToModel).toHaveBeenCalled();
+			});
+		
+			it("should call the given translator function with the new model value as argument", function(){
+				expect(dummyTranslatorDomToModel).toHaveBeenCalledWith(newValue);
+			});
+
+			it("should fill the model with the new value from the bound DOM element", function(){
+				expect($(model).attr(boundField)).toEqual(numberToWordTranslator(newValue));
+			});
+		});	// when the DOM element changes
+	}); // for number boxes with translator functions
+
+	describe("for inexistent DOM element",  function() {
+		var initialValue = 'some text';
+		var domId = 'somethingWhichSurelyIsNotInDOM';
+		var domSelector = '#'+domId;
+
+		beforeEach(function() {
+			domElement = $(domSelector);
+			if(domElement) domElement.remove();
+			$(model).attr(boundField, initialValue);
+			$(model).dataBind({modelAttribute:boundField, selector:domSelector});
+		});
+
+		describe("initial binding", function(){
+			it("should not crash and leave the model unchanged", function(){
+				expect($(model).attr(boundField)).toEqual(initialValue);
+			});
+		}); // "initial binding"
+		
+		describe("when the model changes", function(){
+			var newValue = 'some other text';
+
+			beforeEach(function(){
+				$(model).attr(boundField, newValue);
+			});
+			
+			it("should not crash and the model keeps its new value", function(){
+				expect($(model).attr(boundField)).toEqual(newValue);
+			});		
+		});	// when the model changes
+	}); // for inexistent DOM element
 	
 }); // dataBind()
 

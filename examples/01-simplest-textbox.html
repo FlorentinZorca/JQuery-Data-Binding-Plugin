@@ -9,7 +9,9 @@
 <body>
 	<br/>
     Name: <input id="name" value="If you see me it doesn't work."/><br/>
-	Echo:&nbsp;<label id="nameEcho">If you see me it doesn't work.</label>
+	Echo:&nbsp;<label id="nameEcho">If you see me it doesn't work.</label><br/>
+    Age: <input id="age" type="number" value="0" min="0" max="140"/><br/>
+	Echo:&nbsp;<label id="ageEcho">If you see me it doesn't work.</label>
 
     <script type="text/javascript">
 	// my model is a really simple JS object 
@@ -20,10 +22,14 @@
 			// bind the model's 'name' attribute to the input textbox identified by it's id (CSS selector '#name') and react on DOM 'keyup' and 'change' events
 			.dataBind({modelAttribute:'name', selector:'#name', eventToBind:'keyup change'})
 			// then bind again the model's 'name' attribute to the feedback label named 'nameEcho'
-			.dataBind({modelAttribute:'name', selector:'#nameEcho'});
+			.dataBind({modelAttribute:'name', selector:'#nameEcho'})
+			.dataBind({modelAttribute:'age', selector:'#age', eventToBind:'keyup change'})
+			.dataBind({modelAttribute:'age', selector:'#ageEcho'})
+			;
 	
     // Modify the model by setting attributes via attr(), which is intercepted in order to propagate changes. 
         $(myModel).attr('name', 'Max Mustermann');
+        $(myModel).attr('age', '36');
 		
 		// DON'T SET THE MODEL LIKE THIS:
         // DO NOT: contact.name = "Some Name"; and neither do contact['name'] = "Some Name"; 
